@@ -1,4 +1,6 @@
 fastapi
 uvicorn
-python-dotenv
 supabase
+bcrypt
+python-jose
+email-validator

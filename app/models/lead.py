@@ -1,23 +1,41 @@
-from pydantic import BaseModel, Field
+# app/models/lead.py
+from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
 from datetime import date
 
-class Lead(BaseModel):
-    id: Optional[int] = Field(default=None)
+# ----------------------------
+# Base Lead Schema
+# ----------------------------
+class LeadBase(BaseModel):
     first_name: str
     last_name: str
-    company: Optional[str]
-    email: str
-    phone: Optional[str]
-    source: Optional[str]
+    company: Optional[str] = None
+    email: EmailStr
+    phone: Optional[str] = None
+    source: Optional[str] = None
     status: str
-    notes: Optional[str]
-    created: Optional[date]
+    notes: Optional[str] = None
+    created: Optional[date] = None
+
+# ----------------------------
+# Create Lead Schema
+# ----------------------------
+class LeadCreate(LeadBase):
+    """Schema for creating a lead — no ID or owner_email required."""
+    pass
+
+# ----------------------------
+# Full Lead Schema
+# ----------------------------
+class Lead(LeadBase):
+    id: Optional[int] = Field(default=None)
+    owner_email: Optional[EmailStr] = None  # Set from current user automatically
 
     model_config = {
         "from_attributes": True,
         "json_schema_extra": {
             "example": {
+                "id": 1,
                 "first_name": "John",
                 "last_name": "Doe",
                 "company": "Acme Corp",
@@ -26,7 +44,8 @@ class Lead(BaseModel):
                 "source": "website",
                 "status": "new",
                 "notes": "Interested in demo",
-                "created": "2025-07-30"
+                "created": "2025-07-30",
+                "owner_email": "user@example.com"
             }
         }
     }
