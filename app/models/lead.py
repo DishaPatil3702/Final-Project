@@ -7,33 +7,33 @@ from datetime import date
 # Base Lead Schema
 # ----------------------------
 class LeadBase(BaseModel):
-    first_name: str
-    last_name: str
-    company: Optional[str] = None
-    email: EmailStr
-    phone: Optional[str] = None
-    source: Optional[str] = None
-    status: str
-    notes: Optional[str] = None
-    created: Optional[date] = None
+    first_name: str = Field(..., example="John")
+    last_name: str = Field(..., example="Doe")
+    company: Optional[str] = Field(None, example="Acme Corp")
+    email: EmailStr = Field(..., example="john@example.com")
+    phone: Optional[str] = Field(None, example="+91-9876543210")
+    source: Optional[str] = Field(None, example="Website")
+    status: str = Field(..., example="new")
+    notes: Optional[str] = Field(None, example="Interested in demo")
+    created: Optional[date] = Field(None, example="2025-08-16")
 
 # ----------------------------
 # Create Lead Schema
 # ----------------------------
 class LeadCreate(LeadBase):
-    """Schema for creating a lead — no ID or owner_email required."""
+    """Schema for creating a new lead — excludes ID and owner_email."""
     pass
 
 # ----------------------------
-# Full Lead Schema
+# Full Lead Schema (DB Record)
 # ----------------------------
 class Lead(LeadBase):
-    id: Optional[int] = Field(default=None)
-    owner_email: Optional[EmailStr] = None  # Set from current user automatically
+    id: Optional[int] = Field(default=None, example=1)
+    owner_email: Optional[EmailStr] = Field(None, example="user@example.com")
 
-    model_config = {
-        "from_attributes": True,
-        "json_schema_extra": {
+    class Config:
+        from_attributes = True  # allows ORM → Pydantic
+        json_schema_extra = {
             "example": {
                 "id": 1,
                 "first_name": "John",
@@ -41,11 +41,10 @@ class Lead(LeadBase):
                 "company": "Acme Corp",
                 "email": "john@example.com",
                 "phone": "+91-9876543210",
-                "source": "website",
+                "source": "Website",
                 "status": "new",
                 "notes": "Interested in demo",
-                "created": "2025-07-30",
+                "created": "2025-08-16",
                 "owner_email": "user@example.com"
             }
         }
-    }
